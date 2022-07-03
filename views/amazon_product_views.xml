@@ -1,0 +1,163 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <!-- PRODUCTS -->
+    <record id="view_amazon_product_product_search" model="ir.ui.view">
+        <field name="name">amazon.product.product.search</field>
+        <field name="model">amazon.product.product</field>
+        <field name="arch" type="xml">
+            <search string="Search Amazon Products">
+                <field name="sku"/>
+                <field name="asin"/>
+                <field name="odoo_id" string="Odoo product"/>
+            </search>
+        </field>
+    </record>
+
+    <record id="view_amazon_product_tree" model="ir.ui.view">
+        <field name="name">amazon.product.product.tree</field>
+        <field name="model">amazon.product.product</field>
+        <field name="arch" type="xml">
+            <tree string="Amazon Product">
+                <field name="backend_id"/>
+                <field name="odoo_id"/>
+                <field name="asin"/>
+                <field name="sku"/>
+                <field name="brand"/>
+                <field name="amazon_qty"/>
+                <field name="height"/>
+                <field name="length"/>
+                <field name="weight"/>
+                <field name="width"/>
+                <field name="handling_time"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_amazon_product_form" model="ir.ui.view">
+        <field name="name">amazon.product.product.form</field>
+        <field name="model">amazon.product.product</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="backend_name"/>
+                </group>
+                <group>
+                    <field name="odoo_id"/>
+                </group>
+                <group>
+                    <field name="asin"/>
+                </group>
+                <group>
+                    <field name="sku"/>
+                </group>
+                <group>
+                    <field name="brand"/>
+                </group>
+                <group>
+                    <field name="amazon_qty"/>
+                </group>
+                <group>
+                    <field name="height"/>
+                </group>
+                <group>
+                    <field name="length"/>
+                </group>
+                <group>
+                    <field name="weight"/>
+                </group>
+                <group>
+                    <field name="width"/>
+                </group>
+                <group>
+                    <field name="handling_time"/>
+                </group>
+                <group>
+                    <field name="stock_sync"/>
+                </group>
+                <field name="product_product_market_ids"/>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_amazon_product" model="ir.actions.act_window">
+        <field name="name">Amazon Products</field>
+        <field name="res_model">amazon.product.product</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_amazon_product_tree"/>
+    </record>
+
+    <record id="view_amazon_product_marketplace_form" model="ir.ui.view">
+        <field name="name">amazon.product.product.form</field>
+        <field name="model">amazon.product.product.detail</field>
+        <field name="arch" type="xml">
+            <form>
+                <group>
+                    <field name="product_id"/>
+                </group>
+                <group>
+                    <field name="title"/>
+                </group>
+                <group>
+                    <field name="price"/>
+                    <field name="currency_price"/>
+                </group>
+                <group>
+                    <field name="price_ship"/>
+                    <field name="currency_ship_price"/>
+                </group>
+                <group>
+                    <field name="marketplace_id"/>
+                    <field name="status"/>
+                </group>
+                <group>
+                    <field name="stock"/>
+                </group>
+                <group>
+                    <field name="buybox_price"/>
+                    <field name="lowest_price"/>
+                </group>
+                <group>
+                    <field name="merchant_shipping_group"/>
+                </group>
+                <group>
+                    <field name="stock_sync"/>
+                </group>
+                <group>
+                    <field name="total_fee"/>
+                    <field name="percentage_fee"/>
+                </group>
+            </form>
+        </field>
+    </record>
+
+    <!-- PRODUCT MARKETPLACE DATA -->
+    <record id="view_amazon_product_marketplace_tree" model="ir.ui.view">
+        <field name="name">Amazon product marketplace data</field>
+        <field name="model">amazon.product.product.detail</field>
+        <field name="arch" type="xml">
+            <tree string="Amazon Marketplace Product Data" editable="bottom">
+                <field name="title"/>
+                <field name="price"/>
+                <field name="price_ship"/>
+                <field name="total_price"/>
+                <field name="currency_price"/>
+                <field name="lowest_price" readonly="1"/>
+                <field name="buybox_price" readonly="1"/>
+                <field name="marketplace_id" readonly="1"/>
+                <field name="status" readonly="1"/>
+                <field name="stock"/>
+                <field name="merchant_shipping_group" readonly="1"/>
+                <field name="percentage_fee" readonly="1"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="action_amazon_product_marketplace" model="ir.actions.act_window">
+        <field name="name">Amazon product marketplace data</field>
+        <field name="res_model">amazon.product.product.detail</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_amazon_product_marketplace_tree"/>
+    </record>
+
+</odoo>

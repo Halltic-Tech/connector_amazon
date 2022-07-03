@@ -1,0 +1,99 @@
+<?xml version="1.0" encoding="utf-8"?>
+<odoo>
+
+    <record id="view_amazon_backend_tree" model="ir.ui.view">
+        <field name="name">Amazon backend</field>
+        <field name="model">amazon.backend</field>
+        <field name="arch" type="xml">
+            <tree string="Amazon Backend">
+                <field name="name"/>
+                <field name="seller"/>
+                <field name="region"/>
+            </tree>
+        </field>
+    </record>
+
+    <record id="view_amazon_backend_form" model="ir.ui.view">
+        <field name="name">amazon.backend.form</field>
+        <field name="model">amazon.backend</field>
+        <field name="arch" type="xml">
+            <form>
+                <sheet>
+                    <div class="oe_button_box" name="button_box">
+                        <button name="toggle_prod_environment"
+                                attrs="{'invisible': [('prod_environment', '=', False)]}"
+                                class="oe_stat_button"
+                                type="object" icon="fa-play">
+                            <div class="o_stat_info o_field_widget">
+                                <span class="text-success">Production</span>
+                                <span class="o_stat_text">Environment</span>
+                            </div>
+                        </button>
+                        <!-- transfer referenced here due to view inheritance issue in current master (post-saas-16) -->
+                        <button name="toggle_prod_environment"
+                                attrs="{'invisible': [('prod_environment', '=', True)]}"
+                                class="oe_stat_button"
+                                type="object" icon="fa-stop">
+                            <div class="o_stat_info o_field_widget">
+                                <span class="o_warning_text">Test</span>
+                                <span class="o_stat_text">Environment</span>
+                            </div>
+                        </button>
+                    </div>
+                    <div class="oe_title" name="title">
+                        <label for="name" string="Name" class="oe_edit_only"/>
+                        <h1>
+                            <field name="name" placeholder="Backend name"/>
+                            <field name="prod_environment" invisible="1"/>
+                        </h1>
+                    </div>
+                    <group>
+                        <group>
+                            <field name="region"/>
+                        </group>
+                    </group>
+
+                    <group>
+                        <field name="warehouse_id"/>
+                    </group>
+
+                    <notebook>
+                        <page name="credentials" string="MWS credentials">
+                            <group name="mws_credentials">
+                                <field name="access_key"/>
+                                <field name="key" password="True"/>
+                                <field name="seller"/>
+                                <field name="token" password="True"/>
+                                <field name="developer"/>
+                            </group>
+                        </page>
+
+                        <page name="sales" string="Sales configuration">
+                            <group name="sales_configuration">
+                                <field name="import_sales_from_date"/>
+                                <field name="import_updated_sales_from_date" invisible="1"/>
+                                <field name="team_id"/>
+                                <field name="sale_prefix"/>
+                            </group>
+                        </page>
+
+                        <page name="marketplaces" string="Marketplaces">
+                            <group name="backend_marketplaces">
+                                <field name="marketplace_ids"/>
+                            </group>
+                        </page>
+
+                    </notebook>
+                </sheet>
+            </form>
+        </field>
+    </record>
+
+    <record id="action_amazon_backend" model="ir.actions.act_window">
+        <field name="name">Amazon Backends</field>
+        <field name="res_model">amazon.backend</field>
+        <field name="view_mode">tree,form</field>
+        <field name="view_id" ref="view_amazon_backend_tree"/>
+    </record>
+
+</odoo>
