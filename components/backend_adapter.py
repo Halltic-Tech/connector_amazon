@@ -1030,9 +1030,6 @@ class AmazonAPI(object):
 
         product = {}
 
-        import wdb
-        wdb.set_trace()
-
         product = self._get_main_data_product(sku, marketplace_id, product_api, product)
 
         product = self._get_my_price_product(sku, marketplace_id, product_api, product)
