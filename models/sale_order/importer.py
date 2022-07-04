@@ -473,8 +473,6 @@ class SaleOrderImporter(Component):
 
         :param external_id: identifier of the record on Amazon
         """
-        import wdb
-        wdb.set_trace()
         if external_id and (isinstance(external_id, list) or isinstance(external_id, tuple)):
             self.external_id = external_id[0]
             self.amazon_record = external_id[1]
