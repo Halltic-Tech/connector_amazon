@@ -98,8 +98,6 @@ class SaleOrderImportMapper(Component):
               ('order_id', 'id_amazon_order'),
               ('date_order', 'date_order'),
               ('date_order', 'date_purchase'),
-              ('date_order', 'confirmation_date'),
-              ('date_order', 'requested_date'),
               ('total_product_price', 'total_product_amount'),
               ('total_ship_amount', 'total_ship_amount'),
               ('earlest_delivery_date', 'date_earliest_delivery'),
@@ -249,10 +247,6 @@ class SaleOrderImportMapper(Component):
         if record.get('partner_id') or (record.get('partner') and record.get('partner').get('name')):
             return {'state':'sale'}
         return {'state':'draft'}
-
-    @mapping
-    def total_tax_included(self, record):
-        return {'total_included':True}
 
     @mapping
     def team_id(self, record):
@@ -406,16 +400,13 @@ class SaleOrderImporter(Component):
             Recalculate the prices with taxes (all the sales on Amazon have the prices included)
         """
         try:
-            backend = self.backend_record
             if binding.odoo_id.order_line:
                 # Compute the prices of lines without taxes
                 amount_untaxed = amount_tax = 0.0
                 for line in binding.odoo_id.order_line:
                     # Get the default sale tax of the company
                     if not line.tax_id:
-                        line.tax_id = backend.env['account.tax'].browse(backend.env['ir.values'].get_default('product.template',
-                                                                                                             'taxes_id',
-                                                                                                             company_id=backend.company_id.id))
+                        line.tax_id = self.env.company.account_sale_tax_id
                     if not line.tax_id.price_include and line.tax_id:
                         taxes = line.tax_id._compute_amount_taxes(line.price_unit,
                                                                   line.product_uom_qty)
@@ -441,14 +432,15 @@ class SaleOrderImporter(Component):
                     'amount_total':amount_untaxed + amount_tax,
                 })
 
-            date_order = datetime.strptime(binding.date_order, '%Y-%m-%d %H:%M:%S')
-            date_latest_delivery = datetime.strptime(binding.date_latest_delivery, '%Y-%m-%d %H:%M:%S')
-            difference = date_latest_delivery - date_order
-            days = divmod(difference.total_seconds(), 86400)
-            days = days[0] + days[1] / 86400.0
+            if binding.date_order and binding.date_latest_delivery:
+                date_order = datetime.strptime(binding.date_order, '%Y-%m-%d %H:%M:%S')
+                date_latest_delivery = datetime.strptime(binding.date_latest_delivery, '%Y-%m-%d %H:%M:%S')
+                difference = date_latest_delivery - date_order
+                days = divmod(difference.total_seconds(), 86400)
+                days = days[0] + days[1] / 86400.0
 
-            for line in binding.odoo_id.order_line:
-                line.customer_lead = days
+                for line in binding.odoo_id.order_line:
+                    line.customer_lead = days
 
 
         except Exception as e:

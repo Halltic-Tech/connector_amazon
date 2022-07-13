@@ -57,10 +57,10 @@ class ProductImportMapper(Component):
               ('amazon_qty', 'amazon_qty'),
               ('id_type_product', 'id_type_product'),
               ('id_product', 'id_product'),
-              ('height', 'height'),
-              ('length', 'length'),
+              ('height', 'product_height'),
+              ('length', 'product_length'),
               ('weight', 'weight'),
-              ('width', 'width'),
+              ('width', 'product_width'),
               ('brand', 'brand'),
               ]
 
@@ -203,7 +203,11 @@ class ProductImporter(Component):
 
     def _get_binary_image(self, image_url):
         # TODO test this
-        url = image_url.encode('utf8')
+        url = ''
+        if not isinstance(image_url, str):
+            url = image_url.encode('utf8')
+        else:
+            url = image_url
         try:
             response = urllib.request.urlopen(url)
         except urllib.request.HTTPError as err:
@@ -237,7 +241,7 @@ class ProductImporter(Component):
         ppt = ept.pool.get('product.template')
         epu = self.env['amazon.uom.uom']
 
-        if product_data.get('height') and not binding.product_tmpl_id.height:
+        if product_data.get('height') and not binding.product_tmpl_id.product_height:
             # If we have height from amazon, we import the value in meters
             try:
                 if isinstance(product_data['height'], dict):
@@ -247,11 +251,11 @@ class ProductImporter(Component):
                                                                    float(product_data['height'].value),
                                                                    height_units.product_uom_id)
                 binding.write({'height':product_data['height']})
-                binding.product_tmpl_id.write({'height':product_data['height']})
+                binding.product_tmpl_id.write({'product_height':product_data['height']})
             except:
                 _logger.error("Getting height to import %s", binding.sku)
 
-        if product_data.get('length') and not binding.product_tmpl_id.length:
+        if product_data.get('length') and not binding.product_tmpl_id.product_length:
             # If we have length from amazon, we import the value in meters
             try:
                 if isinstance(product_data['length'], dict):
@@ -261,11 +265,11 @@ class ProductImporter(Component):
                                                                    float(product_data['length'].value),
                                                                    length_units.product_uom_id)
                 binding.write({'length':product_data['length']})
-                binding.product_tmpl_id.write({'length':product_data['length']})
+                binding.product_tmpl_id.write({'product_length':product_data['length']})
             except:
                 _logger.error("Getting length to import %s", binding.sku)
 
-        if product_data.get('width') and not binding.product_tmpl_id.width:
+        if product_data.get('width') and not binding.product_tmpl_id.product_width:
             # If we have width from amazon, we import the value in meters
             try:
                 if isinstance(product_data['width'], dict):
@@ -275,7 +279,7 @@ class ProductImporter(Component):
                                                                   float(product_data['width'].value),
                                                                   width_units.product_uom_id)
                 binding.write({'width':product_data['width']})
-                binding.product_tmpl_id.write({'width':product_data['width']})
+                binding.product_tmpl_id.write({'product_width':product_data['width']})
             except:
                 _logger.error("Getting wight to import: %s ", binding.sku)
 
@@ -302,7 +306,7 @@ class ProductImporter(Component):
 
     def _write_image_data(self, binding, binary):
         binding = binding.with_context(connector_no_export=True)
-        binding.write({'image':base64.b64encode(binary)})
+        binding.write({'image_1920':base64.b64encode(binary)})
 
     def _write_product_data(self, binding, marketplace):
         """
@@ -313,7 +317,7 @@ class ProductImporter(Component):
         """
         self.external_id = binding.external_id
         no_has_brand = not binding.odoo_id.product_brand_id
-        no_has_dimensions = not (binding.odoo_id.height or binding.odoo_id.length or binding.odoo_id.width or binding.odoo_id.weight)
+        no_has_dimensions = not (binding.odoo_id.product_height or binding.odoo_id.product_length or binding.odoo_id.product_width or binding.odoo_id.weight)
         no_has_images = not (binding.odoo_id.image_ids)
         if no_has_brand or no_has_dimensions or no_has_images:
             data_product = self.backend_adapter.read(external_id=self.external_id, attributes=marketplace.id_mws)
@@ -402,7 +406,11 @@ class ProductImporter(Component):
         else:
             self.external_id = external_id.encode('utf8')
 
+        if isinstance(self.external_id, bytes):
+            self.external_id = self.external_id.decode('utf8')
+
         _super = super(ProductImporter, self)
+
         return _super.run(external_id=self.external_id, force=force)
 
 
@@ -416,11 +424,6 @@ class ProductProductMarketImportMapper(Component):
               ('price_shipping', 'price_ship'),
               ('status', 'status'),
               ('stock', 'stock'),
-              ('is_mine_buy_box', 'has_buybox'),
-              ('is_mine_lowest_price', 'has_lowest_price'),
-              ('lowest_landed_price', 'lowest_price'),
-              ('lowest_listing_price', 'lowest_product_price'),
-              ('lowest_shipping_price', 'lowest_shipping_price'),
               ('merchant_shipping_group', 'merchant_shipping_group'), ]
 
     @mapping
@@ -430,17 +433,6 @@ class ProductProductMarketImportMapper(Component):
     @mapping
     def marketplace_id(self, record):
         return {'marketplace_id':record.get('marketplace_id')}
-
-    @mapping
-    def currency_id(self, record):
-        if record.get('currency_price_unit') and isinstance(record['currency_price_unit'], float):
-            return {'currency_id':record['currency_price_unit']}
-        else:
-            rce = self.env['res.currency']
-            return {'currency_id':rce.search([('name', '=', record.get('currency_price_unit'))]).id or \
-                                  self.env.user.company_id.currency_id.id or \
-                                  self.env.ref('base.EUR').id}
-        return
 
     @mapping
     def currency_price(self, record):

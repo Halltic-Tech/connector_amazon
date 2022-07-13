@@ -895,7 +895,7 @@ class AmazonAPI(object):
 
         if type_id:
             try:
-                response = product_api.get_matching_product_for_id(type=type_id, ids=ids, marketplaceid=marketplace_id)
+                response = product_api.get_matching_product_for_id(type_=type_id, ids=ids, marketplaceid=marketplace_id)
 
                 if response and response._response_dict and response._response_dict[response._rootkey] and \
                         response._response_dict[response._rootkey] and response._response_dict[response._rootkey].get('Products'):

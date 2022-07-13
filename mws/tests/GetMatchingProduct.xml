@@ -56,9 +56,7 @@
                     <ns2:ProductTypeName>SHORTS</ns2:ProductTypeName>
                     <ns2:Publisher>Pearl iZUMi</ns2:Publisher>
                     <ns2:SmallImage>
-                        <ns2:URL>
-                            http://ecx.images-amazon.com/images/I/41ty3Sn%2BU8L._SL75_.jpg
-                        </ns2:URL>
+                        <ns2:URL>http://ecx.images-amazon.com/images/I/41ty3Sn%2BU8L._SL75_.jpg</ns2:URL>
                         <ns2:Height Units="pixels">75</ns2:Height>
                         <ns2:Width Units="pixels">58</ns2:Width>
                     </ns2:SmallImage>
